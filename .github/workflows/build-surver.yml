@@ -30,15 +30,15 @@ jobs:
 
       - name: Package
         run: |
-          mkdir -p surfer-suite-linux-x86_64/bin
-          cp target/release/surfer target/release/surver surfer-suite-linux-x86_64/bin/
-          tar czf surfer-suite-linux-x86_64.tar.gz surfer-suite-linux-x86_64
+          mkdir -p surfer-linux-x86_64/bin
+          cp target/release/surfer target/release/surver surfer-linux-x86_64/bin/
+          tar czf surfer-linux-x86_64.tar.gz surfer-linux-x86_64
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: surfer-suite-linux-x86_64
-          path: surfer-suite-linux-x86_64.tar.gz
+          name: surfer-linux-x86_64
+          path: surfer-linux-x86_64.tar.gz
 
   release:
     needs: [build-linux-x86_64]
@@ -48,9 +48,9 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: surfer-suite-linux-x86_64
+          name: surfer-linux-x86_64
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: surfer-suite-linux-x86_64.tar.gz
+          files: surfer-linux-x86_64.tar.gz
