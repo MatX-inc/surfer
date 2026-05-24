@@ -1,0 +1,53 @@
+name: Build surver
+
+on:
+  push:
+    tags:
+      - "build-*"
+
+jobs:
+  build-linux-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install dependencies
+        run: sudo apt-get update -y && sudo apt-get install -y python3-dev
+
+      - name: Build surver
+        run: cargo build --release --locked -p surver
+
+      - name: Package
+        run: |
+          mkdir -p surver-linux-x86_64/bin
+          cp target/release/surver surver-linux-x86_64/bin/surver
+          tar czf surver-linux-x86_64.tar.gz surver-linux-x86_64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: surver-linux-x86_64
+          path: surver-linux-x86_64.tar.gz
+
+  release:
+    needs: [build-linux-x86_64]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: surver-linux-x86_64
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: surver-linux-x86_64.tar.gz
