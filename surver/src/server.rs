@@ -541,8 +541,13 @@ pub async fn surver_main(
         warn!("Surver traffic is unencrypted and unauthenticated - use with caution!");
     }
 
+    // Bind first so we can resolve the actual port (important when port == 0).
+    let bind_addr = SocketAddr::new(ip_addr, port);
+    let listener = TcpListener::bind(&bind_addr).await?;
+    let addr = listener.local_addr()?;
+    let port = addr.port();
+
     // immutable read-only data
-    let addr = SocketAddr::new(ip_addr, port);
     let url = format!("http://{addr}/{token}");
     let url_copy = url.clone();
     let token_copy = token.clone();
@@ -567,8 +572,6 @@ pub async fn surver_main(
         info!("or, if the host is directly accessible:");
         info!("1. Start Surfer: surfer {hosturl} ");
     }
-    // create listener and serve it
-    let listener = TcpListener::bind(&addr).await?;
 
     // we have started the server
     if let Some(started) = started {
