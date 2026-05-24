@@ -40,8 +40,36 @@ jobs:
           name: surfer-linux-x86_64
           path: surfer-linux-x86_64.tar.gz
 
+  build-darwin-aarch64:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build surver and surfer
+        run: cargo build --release --locked -p surver -p surfer
+
+      - name: Package
+        run: |
+          mkdir -p surfer-darwin-aarch64/bin
+          cp target/release/surfer target/release/surver surfer-darwin-aarch64/bin/
+          tar czf surfer-darwin-aarch64.tar.gz surfer-darwin-aarch64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: surfer-darwin-aarch64
+          path: surfer-darwin-aarch64.tar.gz
+
   release:
-    needs: [build-linux-x86_64]
+    needs: [build-linux-x86_64, build-darwin-aarch64]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -50,7 +78,13 @@ jobs:
         with:
           name: surfer-linux-x86_64
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: surfer-darwin-aarch64
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: surfer-linux-x86_64.tar.gz
+          files: |
+            surfer-linux-x86_64.tar.gz
+            surfer-darwin-aarch64.tar.gz
