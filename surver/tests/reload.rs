@@ -49,6 +49,7 @@ async fn server_reload_with_overwrite() {
             Some(token_clone),
             &[dest_clone.to_string_lossy().to_string()],
             Some(started_clone),
+            None,
         )
         .await
         {
@@ -184,6 +185,7 @@ async fn server_direct_reload_ok_then_not_modified() {
             Some(token_clone),
             &[dest_clone.to_string_lossy().to_string()],
             Some(started_clone),
+            None,
         )
         .await
         {
