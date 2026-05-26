@@ -27,6 +27,7 @@ fn start_server(bind_address: &str, port: u16, token: &str, filenames: &[String]
             token,
             &filenames,
             Some(started_copy),
+            None,
         ));
     });
 
