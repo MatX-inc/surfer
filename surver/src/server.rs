@@ -472,7 +472,13 @@ pub async fn surver_main(
     token: Option<String>,
     filenames: &[String],
     started: Option<ServerStartedFlag>,
+    client_cmd_prefix: Option<String>,
 ) -> Result<()> {
+    // Command shown to the user to launch a client against this server.
+    // Defaults to "surfer" to preserve historical output; downstream wrappers
+    // can pass e.g. "bazel run //tools:surfer --" so the printed line is
+    // directly copy-pasteable without post-processing surver's stdout.
+    let client_cmd_prefix = client_cmd_prefix.unwrap_or_else(|| "surfer".to_string());
     // if no token was provided, we generate one
     let token = token.unwrap_or_else(|| {
         // generate a random ASCII token
@@ -566,11 +572,11 @@ pub async fn surver_main(
         );
     }
 
-    info!("2. Start Surfer: surfer {url_copy} ");
+    info!("2. Start Surfer: {client_cmd_prefix} {url_copy} ");
     if !use_localhost && let Ok(hostname) = hostname {
         let hosturl = format!("http://{hostname}:{port}/{token_copy}");
         info!("or, if the host is directly accessible:");
-        info!("1. Start Surfer: surfer {hosturl} ");
+        info!("1. Start Surfer: {client_cmd_prefix} {hosturl} ");
     }
 
     // we have started the server

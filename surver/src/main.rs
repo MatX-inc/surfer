@@ -24,6 +24,12 @@ struct Args {
     /// Token used by the client to authenticate to the server
     #[clap(long)]
     token: Option<String>,
+    /// Command prefix shown in the "Start Surfer:" line printed at startup.
+    /// Defaults to "surfer". Set this (e.g. "bazel run //tools:surfer --")
+    /// when surver is wrapped by another launcher, so the printed line is
+    /// directly copy-pasteable without post-processing stdout.
+    #[clap(long)]
+    client_cmd_prefix: Option<String>,
 }
 
 #[derive(Debug, Default, clap::Args)]
@@ -108,5 +114,6 @@ fn main() -> Result<()> {
         args.token,
         &file_names,
         None,
+        args.client_cmd_prefix,
     ))
 }
