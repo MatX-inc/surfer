@@ -2,6 +2,7 @@ use egui::{Response, Ui};
 use egui_extras::{Column, TableBuilder};
 use ftr_parser::types::Transaction;
 use num::BigUint;
+use surfer_translation_types::translator::{TrueName, VariableNameInfo};
 
 use crate::{
     transaction_container::{TransactionRef, TransactionStreamRef},
@@ -25,8 +26,12 @@ fn find_transaction<'a>(
 }
 
 #[must_use]
-pub(crate) fn variable_tooltip_text(meta: Option<&VariableMeta>, variable: &VariableRef) -> String {
-    if let Some(meta) = meta {
+pub(crate) fn variable_tooltip_text(
+    meta: Option<&VariableMeta>,
+    variable: &VariableRef,
+    name_info: Option<&VariableNameInfo>,
+) -> String {
+    let mut text = if let Some(meta) = meta {
         format!(
             "{}\nNum bits: {}\nType: {}\nDirection: {}",
             variable.full_path_string(),
@@ -41,7 +46,17 @@ pub(crate) fn variable_tooltip_text(meta: Option<&VariableMeta>, variable: &Vari
         )
     } else {
         variable.full_path_string()
+    };
+    // where a translator places the variable in the source
+    if let Some(TrueName::SourceCode {
+        line_number,
+        file: Some(file),
+        ..
+    }) = name_info.and_then(|info| info.true_name.as_ref())
+    {
+        text.push_str(&format!("\nSource: {file}:{line_number}"));
     }
+    text
 }
 
 #[must_use]

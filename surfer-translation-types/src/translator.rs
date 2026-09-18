@@ -39,6 +39,9 @@ pub enum TrueName {
         before: String,
         this: String,
         after: String,
+        /// The source file the line is in, when the translator knows it
+        #[serde(default)]
+        file: Option<String>,
     },
 }
 
@@ -68,6 +71,13 @@ pub struct VariableNameInfo {
     /// For example, an HDL translator that does not recognise a name should leave it at None
     /// to give other translators the chance to set the priority
     pub priority: Option<i32>,
+    /// Whether the variable is shown in the variable list by default. `Some(false)` hides
+    /// it until the user asks to see hidden variables; a translator says so about variables
+    /// a human rarely wants to see, such as a compiler's intermediate values, which would
+    /// otherwise bury the design's own signals. `None` leaves the decision to other
+    /// translators (and the variable visible).
+    #[serde(default)]
+    pub visible: Option<bool>,
 }
 
 #[cfg_attr(feature = "wasm_plugins", derive(FromBytes, ToBytes))]

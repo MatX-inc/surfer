@@ -222,6 +222,7 @@ pub mod optional {
             before: String::new(),
             this: String::new(),
             after: String::new(),
+            file: None,
         };
         Ok(None)
     }

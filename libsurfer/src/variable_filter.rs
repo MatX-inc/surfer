@@ -50,6 +50,9 @@ pub struct VariableFilter {
     pub(crate) include_others: bool,
 
     pub(crate) group_by_direction: bool,
+    /// Also list the variables a translator marks as hidden (`VariableNameInfo::visible`)
+    #[serde(default)]
+    pub(crate) include_hidden: bool,
     #[serde(skip)]
     cache: RefCell<VariableFilterRegexCache>,
 }
@@ -92,6 +95,7 @@ impl VariableFilter {
             include_others: true,
 
             group_by_direction: false,
+            include_hidden: false,
             cache: RefCell::new(Default::default()),
         }
     }
@@ -441,6 +445,18 @@ impl SystemState {
             ));
         }
 
+        let mut include_hidden = self.user.variable_filter.include_hidden;
+
+        if ui
+            .checkbox(&mut include_hidden, "Show hidden")
+            .on_hover_text("Also list the variables a translator hides, such as a compiler's intermediate values")
+            .clicked()
+        {
+            msgs.push(Message::SetVariableIncludeHidden(
+                !self.user.variable_filter.include_hidden,
+            ));
+        }
+
         ui.separator();
 
         ui.horizontal(|ui| {
@@ -560,10 +576,27 @@ impl SystemState {
             None => None,
         };
 
-        self.user
-            .variable_filter
-            .matching_variables(variables, wave_container, full_path)
-            .clone()
+        let matching =
+            self.user
+                .variable_filter
+                .matching_variables(variables, wave_container, full_path);
+        if self.user.variable_filter.include_hidden {
+            return matching;
+        }
+        // only a translator hides a variable, and it needs the variable's
+        // metadata, which exists once waves are loaded
+        let Some(wave_container) = wave_container else {
+            return matching;
+        };
+        matching
+            .into_iter()
+            .filter(|vr| {
+                let meta = wave_container.variable_meta(vr).ok();
+                self.get_variable_name_info(vr, meta.as_ref())
+                    .and_then(|info| info.visible)
+                    .unwrap_or(true)
+            })
+            .collect()
     }
 }
 

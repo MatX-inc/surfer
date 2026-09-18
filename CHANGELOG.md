@@ -9,6 +9,13 @@ released as a new version.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+## Added
+
+* Translators can hide variables from the variable list (`VariableNameInfo::visible`), for values a human rarely wants to see such as a compiler's intermediate results; the filter menu's "Show hidden" lists them anyway.
+* A variable's true name can carry its source file (`TrueName::SourceCode::file`), shown in the variable's tooltip.
+
 ## [0.7.0] - 2027-04-27
 
 ## Added

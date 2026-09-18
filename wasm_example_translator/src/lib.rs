@@ -81,8 +81,10 @@ pub fn variable_name_info(
                 before: "ab".to_string(),
                 this: "cde".to_string(),
                 after: "ef".to_string(),
+                file: None,
             }),
             priority: Some(2),
+            visible: None,
         }),
         "trace_file" => Some(VariableNameInfo {
             true_name: Some(TrueName::SourceCode {
@@ -90,8 +92,10 @@ pub fn variable_name_info(
                 before: "this is a very long start of line".to_string(),
                 this: "short".to_string(),
                 after: "a".to_string(),
+                file: None,
             }),
             priority: Some(0),
+            visible: None,
         }),
         "trace_valid" => Some(VariableNameInfo {
             true_name: Some(TrueName::SourceCode {
@@ -99,8 +103,10 @@ pub fn variable_name_info(
                 before: "a".to_string(),
                 this: "trace_valid".to_string(),
                 after: "this is a very long end of line".to_string(),
+                file: None,
             }),
             priority: Some(0),
+            visible: None,
         }),
         "resetn" => Some(VariableNameInfo {
             true_name: Some(TrueName::SourceCode {
@@ -108,8 +114,10 @@ pub fn variable_name_info(
                 before: "this is a very long start of line".to_string(),
                 this: "resetn".to_string(),
                 after: "this is a very long end of line".to_string(),
+                file: None,
             }),
             priority: Some(-1),
+            visible: None,
         }),
         "clk" => Some(VariableNameInfo {
             true_name: Some(TrueName::SourceCode {
@@ -117,8 +125,10 @@ pub fn variable_name_info(
                 before: "this is a very long start of line".to_string(),
                 this: "clk is a very long signal name that stretches".to_string(),
                 after: "this is a very long end of line".to_string(),
+                file: None,
             }),
             priority: Some(0),
+            visible: None,
         }),
         _ => None,
     };

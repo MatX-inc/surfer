@@ -77,6 +77,7 @@ pub(crate) struct AllVariableCacheKey {
     include_inouts: bool,
     include_others: bool,
     group_by_direction: bool,
+    include_hidden: bool,
 }
 
 impl SystemState {
@@ -350,6 +351,7 @@ impl SystemState {
             include_inouts: f.include_inouts,
             include_others: f.include_others,
             group_by_direction: f.group_by_direction,
+            include_hidden: f.include_hidden,
         }
     }
 
@@ -913,11 +915,13 @@ impl SystemState {
                         // reference into the closure so we don't call `variable_meta` again.
                         let tooltip_meta = meta;
                         let tooltip_var = variable.clone();
+                        let tooltip_name_info = row.name_info.clone();
                         response = response.on_hover_ui(move |ui| {
                             ui.set_max_width(ui.spacing().tooltip_width);
                             ui.add(egui::Label::new(variable_tooltip_text(
                                 tooltip_meta,
                                 &tooltip_var,
+                                tooltip_name_info.as_ref(),
                             )));
                         });
                     }

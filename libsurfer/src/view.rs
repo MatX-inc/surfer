@@ -1252,11 +1252,11 @@ impl SystemState {
                 let tooltip = if let Some(user_waves) = &self.user.waves {
                     if field.field.is_empty() {
                         if meta.is_some() {
-                            variable_tooltip_text(meta, &field.root)
+                            variable_tooltip_text(meta, &field.root, None)
                         } else {
                             let wave_container = user_waves.inner.as_waves().unwrap();
                             let meta = wave_container.variable_meta(&field.root).ok();
-                            variable_tooltip_text(meta.as_ref(), &field.root)
+                            variable_tooltip_text(meta.as_ref(), &field.root, None)
                         }
                     } else {
                         "From translator".to_string()
@@ -2059,6 +2059,7 @@ pub fn draw_true_name(
             before,
             this,
             after,
+            ..
         } => {
             let before_chars = before.chars().collect::<Vec<_>>();
             let this_chars = this.chars().collect::<Vec<_>>();
