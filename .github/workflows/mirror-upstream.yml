@@ -1,0 +1,32 @@
+# Keep the upstream-main branch a byte-identical, fast-forward-only mirror
+# of surfer-project/surfer main on GitLab (plus upstream tags, which
+# release tooling's `git describe` needs).  No --force by design: if the
+# push ever refuses, someone committed directly to upstream-main and that
+# deserves a loud failure, not a silent clobber.  workflow_dispatch is
+# the recovery path for GitHub's scheduled-workflow auto-disable, which
+# hits a repository after 60 days without activity.
+name: Mirror surfer-project main
+on:
+  schedule:
+    - cron: '23 4 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fast-forward upstream-main (fail loudly on divergence)
+        run: |
+          git remote add upstream https://gitlab.com/surfer-project/surfer.git
+          git fetch upstream main --tags
+          git push origin upstream/main:refs/heads/upstream-main
+      - name: Sync tags (best effort)
+        # A tag rejection must not mask the branch sync above.  GITHUB_TOKEN
+        # cannot push refs whose trees change workflow files; upstream has
+        # no .github directory, so that only matters if it ever grows one.
+        run: |
+          git push origin --tags || echo "::warning::some tag pushes rejected; recent tags still sync (see log)"
