@@ -1892,8 +1892,10 @@ impl VariableExt for String {
                     (1., Some(color.gamma_multiply(theme.waveform_opacity)))
                 }
             }
+            // low when the text says so: a bit's "0", or a boolean type's
+            // "false" in whatever case its language spells it
             (ValueKind::Normal, other) => {
-                if other == "0" {
+                if other == "0" || other.eq_ignore_ascii_case("false") {
                     (0., None)
                 } else {
                     (1., Some(color.gamma_multiply(theme.waveform_opacity)))
@@ -1902,5 +1904,27 @@ impl VariableExt for String {
             (ValueKind::Event, _) => (1., Some(color.gamma_multiply(theme.waveform_opacity))),
         };
         (height, color, background)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_boolean_reading_false_is_drawn_low() {
+        let state = SystemState::new_default_config().unwrap();
+        let theme = &state.user.config.theme;
+        let height = |text: &str, kind: ValueKind| {
+            text.to_string()
+                .bool_drawing_spec(Color32::WHITE, theme, kind)
+                .0
+        };
+        assert_eq!(height("0", ValueKind::Normal), 0.);
+        assert_eq!(height("False", ValueKind::Normal), 0.);
+        assert_eq!(height("false", ValueKind::Normal), 0.);
+        assert_eq!(height("1", ValueKind::Normal), 1.);
+        assert_eq!(height("True", ValueKind::Normal), 1.);
+        assert_eq!(height("x", ValueKind::Undef), 0.5);
     }
 }
