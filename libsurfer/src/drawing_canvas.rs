@@ -1537,7 +1537,10 @@ impl SystemState {
         brightness_shift: Option<f32>,
         ctx: &mut DrawingContext,
     ) {
-        if let (Some(prev_result), Some(new_result)) = (&prev_region.inner, &new_region.inner) {
+        // The segment is drawn from its own value; the value after it only
+        // shapes the transition edge, and where that value is not present the
+        // segment ends level.
+        if let Some(prev_result) = &prev_region.inner {
             let trace_coords =
                 |x, y| (ctx.to_screen)(x, y * ctx.cfg.line_height * height_scaling_factor + offset);
 
@@ -1550,10 +1553,15 @@ impl SystemState {
                 );
                 (h, apply_brightness_shift(c, brightness_shift, bg_color), bg)
             };
-            let (new_height, _, _) =
-                new_result
-                    .value
-                    .bool_drawing_spec(color, &self.user.config.theme, new_result.kind);
+            let new_height = match &new_region.inner {
+                Some(new_result) => {
+                    new_result
+                        .value
+                        .bool_drawing_spec(color, &self.user.config.theme, new_result.kind)
+                        .0
+                }
+                None => old_height,
+            };
 
             if let (Some(old_bg), true) = (old_bg, draw_background) {
                 ctx.painter.add(RectShape::new(
