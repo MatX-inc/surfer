@@ -405,6 +405,7 @@ impl SystemState {
         // Get enable_time_offset before modifying self.user.waves
         let enable_time_offset = self.enable_time_offset();
         self.user.waves = Some(new_wave);
+        self.invalidate_item_layout();
 
         // Refresh time offset cache after loading waves
         if let Some(waves) = &mut self.user.waves {
@@ -633,6 +634,7 @@ impl SystemState {
         if let Some(load_commands) = load_commands {
             self.load_variables(load_commands);
         }
+        self.invalidate_item_layout();
 
         // reset drag to avoid confusion
         self.user.drag_started = false;

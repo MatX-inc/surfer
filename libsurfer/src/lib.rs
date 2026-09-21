@@ -951,6 +951,7 @@ impl SystemState {
 
                 if redraw {
                     self.invalidate_draw_commands();
+                    self.invalidate_item_layout();
                 }
             }
             Message::ItemSelectionClear => {

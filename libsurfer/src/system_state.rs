@@ -74,7 +74,8 @@ pub struct SystemState {
 
     /// Cached flattened compound-field rows per variable, keyed by a signature of that
     /// variable's fold state (`DisplayedVariable::unfolded_fields`); avoids re-walking the
-    /// (possibly large) field tree every frame when nothing changed.
+    /// (possibly large) field tree every frame when nothing changed. Dropped by
+    /// `invalidate_item_layout` when a variable's shape may have changed.
     pub(crate) flattened_rows_cache: RefCell<FlattenedRowsCache>,
 
     /// Monotonically increasing counter incremented when translators reload, to invalidate

@@ -760,6 +760,16 @@ impl SystemState {
         rows
     }
 
+    /// Drops the cached rows and layout. Both are keyed by fold state alone, so they
+    /// are dropped when a variable's shape (`DisplayedVariable::info`) may have
+    /// changed: a format change, or waves or a state file loaded.
+    pub(crate) fn invalidate_item_layout(&mut self) {
+        self.flattened_rows_cache.borrow_mut().clear();
+        if let Some(waves) = self.user.waves.as_mut() {
+            waves.drawing_infos_signature = None;
+        }
+    }
+
     /// Computes top/bottom for every row (including compound-variable subfields), as if the
     /// first row started at y = 0. Pure function of Surfer state (item tree, displayed
     /// items, fold state) and layout config - no `ui`/egui state involved - so the result
@@ -2171,5 +2181,30 @@ pub fn draw_true_name(
                 },
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::wave_container::VariableRefExt;
+
+    #[test]
+    fn rows_follow_a_changed_shape_once_the_layout_is_invalidated() {
+        let mut state = SystemState::new_default_config().unwrap();
+        let item = DisplayedItemRef(1);
+        let field = FieldRef::without_fields(VariableRef::from_hierarchy_string("top.s"));
+        let unfolded = AHashSet::new();
+        let compound = VariableInfo::Compound {
+            subfields: vec![("x".to_string(), VariableInfo::Bits)],
+        };
+
+        let rows = state.flattened_variable_rows(item, &field, &compound, &unfolded);
+        assert!(rows[0].is_compound);
+
+        // the variable's shape changes under the same fold state
+        state.invalidate_item_layout();
+        let rows = state.flattened_variable_rows(item, &field, &VariableInfo::Bits, &unfolded);
+        assert!(!rows[0].is_compound);
     }
 }
