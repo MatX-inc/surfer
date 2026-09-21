@@ -561,29 +561,27 @@ fn format(
     translators: &TranslatorList,
     subresults: &[HierFormatResult],
 ) -> Option<TranslatedValue> {
+    // Raw bits are formatted by a basic translator. The name given is the
+    // one chosen for this value, but that may be a full translator (the one
+    // that produced the raw bits, when it is the variable's selected
+    // format), in which case the default formatter stands in.
+    let basic = |bit_count: u32, bits: String| {
+        let subtranslator = [subtranslator_name, &translators.default]
+            .into_iter()
+            .find_map(|name| match translators.get_translator(name) {
+                AnyTranslator::Basic(t) => Some(t),
+                _ => None,
+            });
+        match subtranslator {
+            Some(t) => Some(TranslatedValue::from_basic_translate(
+                t.basic_translate(bit_count, &VariableValue::String(bits)),
+            )),
+            None => Some(TranslatedValue { value: bits, kind }),
+        }
+    };
     match val {
-        ValueRepr::Bit(val) => {
-            let AnyTranslator::Basic(subtranslator) =
-                translators.get_translator(subtranslator_name)
-            else {
-                panic!("Subtranslator '{subtranslator_name}' was not a basic translator");
-            };
-
-            Some(TranslatedValue::from_basic_translate(
-                subtranslator.basic_translate(1, &VariableValue::String(val.to_string())),
-            ))
-        }
-        ValueRepr::Bits(bit_count, bits) => {
-            let AnyTranslator::Basic(subtranslator) =
-                translators.get_translator(subtranslator_name)
-            else {
-                panic!("Subtranslator '{subtranslator_name}' was not a basic translator");
-            };
-
-            Some(TranslatedValue::from_basic_translate(
-                subtranslator.basic_translate(*bit_count, &VariableValue::String(bits.clone())),
-            ))
-        }
+        ValueRepr::Bit(val) => basic(1, val.to_string()),
+        ValueRepr::Bits(bit_count, bits) => basic(*bit_count, bits.clone()),
         ValueRepr::String(sval) => Some(TranslatedValue {
             value: sval.clone(),
             kind,
@@ -857,6 +855,29 @@ mod tests {
         let basic_names = translators.basic_translator_names();
         assert!(basic_names.contains(&"Hexadecimal"));
         assert!(basic_names.contains(&"Binary"));
+    }
+
+    #[test]
+    fn raw_bits_under_a_full_translator_use_the_default_format() {
+        let translators = all_translators();
+        let full = "String".to_string();
+        assert!(!translators.get_translator(&full).is_basic());
+
+        let bits = ValueRepr::Bits(8, "10100101".to_string());
+        let formatted = format(&bits, ValueKind::Normal, &full, &translators, &[]).unwrap();
+        let by_default = format(
+            &bits,
+            ValueKind::Normal,
+            &translators.default,
+            &translators,
+            &[],
+        )
+        .unwrap();
+        assert_eq!(formatted.value, by_default.value);
+
+        let bit = ValueRepr::Bit('1');
+        let formatted = format(&bit, ValueKind::Normal, &full, &translators, &[]).unwrap();
+        assert_eq!(formatted.value, "1");
     }
 
     #[test]

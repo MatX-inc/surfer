@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * Translators can hide variables from the variable list (`VariableNameInfo::visible`), for values a human rarely wants to see such as a compiler's intermediate results; the filter menu's "Show hidden" lists them anyway.
 * A variable's true name can carry its source file (`TrueName::SourceCode::file`), shown in the variable's tooltip.
 
+## Fixed
+
+* Selecting a full translator (such as a WASM plugin) as a variable's format no longer crashes Surfer when the translator returns a value as raw bits; the bits are shown in the default format.
+
 ## [0.7.0] - 2027-04-27
 
 ## Added
