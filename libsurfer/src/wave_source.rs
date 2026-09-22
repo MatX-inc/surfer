@@ -345,12 +345,12 @@ impl SystemState {
 
         let path = file.path().to_str().map(Utf8PathBuf::from);
 
-        if let Ok(bytes) = file.bytes() {
-            return self.load_from_dropped_bytes(path, bytes.clone());
-        }
-
         if let Some(path) = path {
             return self.load_from_file(path, LoadOptions::Clear);
+        }
+
+        if let Ok(bytes) = file.bytes() {
+            return self.load_from_dropped_bytes(path, bytes.clone());
         }
 
         Err(anyhow!(
