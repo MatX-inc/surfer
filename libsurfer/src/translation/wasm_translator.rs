@@ -114,6 +114,13 @@ impl PluginTranslator {
                 file_exists,
             )
             .with_function(
+                "absolute_path",
+                [PTR],
+                [PTR],
+                extism::UserData::new(()),
+                absolute_path,
+            )
+            .with_function(
                 "translators_config_dir",
                 [],
                 [PTR],
@@ -307,4 +314,8 @@ host_fn!(read_file(filename: String) -> Vec<u8> {
 
 host_fn!(file_exists(filename: String) -> bool {
     Ok(Utf8PathBuf::from(&filename).exists())
+});
+
+host_fn!(absolute_path(path: String) -> String {
+    Ok(camino::absolute_utf8(Utf8PathBuf::from(&path))?.into_string())
 });
