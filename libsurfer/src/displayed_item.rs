@@ -198,6 +198,15 @@ impl DisplayedVariable {
         }
     }
 
+    /// Set whether `field` (a compound subfield's path) is expanded.
+    pub fn set_field_fold(&mut self, field: Vec<String>, unfolded: bool) {
+        if unfolded {
+            self.unfolded_fields.insert(field);
+        } else {
+            self.unfolded_fields.remove(&field);
+        }
+    }
+
     /// Downgrade `TypeLimits` to `Global` when the translator doesn't support numeric ranges.
     pub fn downgrade_type_limits_if_unsupported(
         &mut self,

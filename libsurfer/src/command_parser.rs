@@ -56,6 +56,14 @@ fn separate_at_space(query: &str) -> (String, String, String, String) {
     )
 }
 
+/// A compound field's path as a command spells it: dotted, "." for the variable itself
+fn field_path(word: &str) -> Vec<String> {
+    match word.trim() {
+        "" | "." => vec![],
+        path => path.split('.').map(str::to_string).collect(),
+    }
+}
+
 pub(crate) fn get_parser(state: &SystemState) -> Command<Message> {
     fn single_word(
         suggestions: Vec<String>,
@@ -294,6 +302,8 @@ pub(crate) fn get_parser(state: &SystemState) -> Command<Message> {
             "item_unset_background_color",
             "item_unfocus",
             "item_rename",
+            "item_unfold_field",
+            "item_fold_field",
             "zoom_fit",
             "scope_add",
             #[cfg(not(target_arch = "wasm32"))]
@@ -839,6 +849,21 @@ pub(crate) fn get_parser(state: &SystemState) -> Command<Message> {
                         )))
                     }),
                 )),
+                // a compound field of the focused variable, as a dotted path below
+                // the variable; "." is the variable itself
+                "item_unfold_field" | "item_fold_field" => {
+                    let unfolded = query == "item_unfold_field";
+                    single_word(
+                        vec![],
+                        Box::new(move |word| {
+                            Some(Command::Terminal(Message::SetVariableFieldFold(
+                                None,
+                                field_path(word),
+                                unfolded,
+                            )))
+                        }),
+                    )
+                }
                 "variable_set_name_type" => single_word(
                     vec![
                         "Local".to_string(),

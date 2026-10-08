@@ -2444,6 +2444,19 @@ impl SystemState {
                     var.toggle_field_fold(field);
                 }
             }
+            Message::SetVariableFieldFold(item_ref, field, unfolded) => {
+                self.invalidate_draw_commands();
+                let waves = self.user.waves.as_mut()?;
+                let item = item_ref.or_else(|| {
+                    waves
+                        .items_tree
+                        .get_visible(waves.focused_item?)
+                        .map(|node| node.item_ref)
+                })?;
+                if let Some(DisplayedItem::Variable(var)) = waves.displayed_items.get_mut(&item) {
+                    var.set_field_fold(field, unfolded);
+                }
+            }
             Message::SetMouseGestureAnnotation(annotation_kind) => {
                 self.annotation_kind = annotation_kind;
             }

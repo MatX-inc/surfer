@@ -139,6 +139,14 @@ Not all commands are available unless a file is loaded. Also, some commands are 
 
   Rename the currently focused item.
 
+* ``item_unfold_field <FIELD>``
+
+  Expand a field of the currently focused variable to show its own subfields. The field is named by its path below the variable, with dots between levels (``shared_reqs.dat``); ``.`` is the variable itself.
+
+* ``item_fold_field <FIELD>``
+
+  Collapse a field of the currently focused variable, named as for ``item_unfold_field``.
+
 * ``item_set_height <HEIGHT>``
 
   Set the height of the currently focused item.
