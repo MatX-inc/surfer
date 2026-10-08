@@ -591,6 +591,10 @@ impl SystemState {
         // first swap everything, fix special cases afterwards
         mem::swap(&mut self.user, &mut loaded_state);
 
+        // the configuration is not part of a state file (the loaded one is
+        // the default, read from disk): keep the running one
+        mem::swap(&mut loaded_state.config, &mut self.user.config);
+
         // swap back waves for inner, source, format since we want to keep the file
         // fix up all wave references from paths if a wave is loaded
         mem::swap(&mut loaded_state.waves, &mut self.user.waves);
