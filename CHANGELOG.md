@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * Changing a variable's format updates its expand triangle and subfield rows right away; they no longer show the previous format's structure.
 * A boolean field whose value reads `false` (in any case) is drawn low, as `0` is; previously only `0` was.
 * A boolean field's segment is drawn even when the value after it is not present (for example a field of a union arm that becomes inactive); previously the segment before an absent value was skipped.
+* `exit` in a command file closes Surfer again. Since commands became parsed at execution, the batch runner's special handling of the exit never saw it and the window stayed open; the exit message now closes the window wherever it is handled, and the runner treats it like any other command.
 
 ## [0.7.0] - 2027-04-27
 

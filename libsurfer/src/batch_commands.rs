@@ -14,31 +14,15 @@ use crate::{
 impl SystemState {
     /// After user messages are addressed, we try to execute batch commands as they are ready to run
     pub(crate) fn handle_batch_commands(&mut self) {
-        let mut should_exit = false;
         // we only execute commands while we aren't waiting for background operations to complete
         while self.can_start_batch_command() {
             if let Some(cmd) = self.batch_messages.pop_front() {
-                if matches!(cmd, Message::Exit) {
-                    should_exit = true;
-                }
                 info!("Applying batch command: {cmd:?}");
                 self.update(cmd);
             } else {
-                break; // no more messages
-            }
-        }
-
-        // if there are no messages and all operations have completed, we are done
-        if !self.batch_messages_completed
-            && self.batch_messages.is_empty()
-            && self.can_start_batch_command()
-        {
-            self.batch_messages_completed = true;
-
-            if should_exit {
-                info!("Exiting due to batch command");
-                let sender = self.channels.msg_sender.clone();
-                checked_send(&sender, Message::Exit);
+                // no more messages, and nothing pending from the last one
+                self.batch_messages_completed = true;
+                break;
             }
         }
     }

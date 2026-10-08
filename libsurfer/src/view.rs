@@ -121,10 +121,6 @@ impl eframe::App for SystemState {
 
         while let Some(msg) = msgs.pop() {
             #[cfg(not(target_arch = "wasm32"))]
-            if let Message::Exit = msg {
-                ui.send_viewport_cmd(ViewportCommand::Close);
-            }
-            #[cfg(not(target_arch = "wasm32"))]
             if let Message::ToggleFullscreen = msg {
                 ui.send_viewport_cmd(ViewportCommand::Fullscreen(!fullscreen));
             }

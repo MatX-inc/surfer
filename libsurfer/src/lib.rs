@@ -2382,7 +2382,15 @@ impl SystemState {
                 }
                 self.invalidate_draw_commands();
             }
-            Message::Exit | Message::ToggleFullscreen => {} // Handled in eframe::update
+            Message::Exit =>
+            {
+                #[cfg(not(target_arch = "wasm32"))]
+                match &self.context {
+                    Some(ctx) => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
+                    None => warn!("Exit requested, but there is no window to close"),
+                }
+            }
+            Message::ToggleFullscreen => {} // Handled in eframe::update
             Message::AddViewport => {
                 let waves = self.user.waves.as_mut()?;
                 let viewport = Viewport::new();
