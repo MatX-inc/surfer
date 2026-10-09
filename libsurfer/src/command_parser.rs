@@ -358,6 +358,8 @@ pub(crate) fn get_parser(state: &SystemState) -> Command<Message> {
             "group_unfold_all",
             "save_state",
             "save_state_as",
+            #[cfg(not(target_arch = "wasm32"))]
+            "screenshot",
             "timeline_add",
             "cursor_set",
             "goto_time",
@@ -1259,6 +1261,15 @@ pub(crate) fn get_parser(state: &SystemState) -> Command<Message> {
                     Box::new(|word| {
                         Some(Command::Terminal(Message::SaveStateFile(Some(
                             Utf8PathBuf::from(word),
+                        ))))
+                    }),
+                ),
+                #[cfg(not(target_arch = "wasm32"))]
+                "screenshot" => single_word(
+                    vec![],
+                    Box::new(|word| {
+                        Some(Command::Terminal(Message::Screenshot(Utf8PathBuf::from(
+                            word,
                         ))))
                     }),
                 ),

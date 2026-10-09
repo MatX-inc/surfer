@@ -388,6 +388,10 @@ Not all commands are available unless a file is loaded. Also, some commands are 
 
   Save the current state to the given file.
 
+* ``screenshot <FILE_NAME>``
+
+  Save the window as a PNG, drawn once the commands before this one have taken effect; the commands after it wait for the file to be written. Not available in the WASM build.
+
 ## Command files
 
 * ``run_command_file <FILE_NAME>`` (not on WASM)

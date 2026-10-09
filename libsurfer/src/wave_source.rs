@@ -252,6 +252,8 @@ pub enum LoadProgressStatus {
     ReadingHeader(WaveSource),
     ReadingBody(WaveSource, u64, Arc<AtomicU64>),
     LoadingVariables(u64),
+    /// A screenshot requested of the window and not yet written
+    Screenshot(Utf8PathBuf),
 }
 
 impl SystemState {
@@ -852,6 +854,10 @@ pub fn draw_progress_information(ui: &mut egui::Ui, progress_data: &LoadProgress
         LoadProgressStatus::LoadingVariables(num) => {
             ui.spinner();
             ui.monospace(format!("Loading {num} variables"));
+        }
+        LoadProgressStatus::Screenshot(path) => {
+            ui.spinner();
+            ui.monospace(format!("Saving screenshot to {path}"));
         }
         LoadProgressStatus::ReadingBody(source, total, bytes_done) => {
             let num_bytes = bytes_done.load(std::sync::atomic::Ordering::SeqCst);

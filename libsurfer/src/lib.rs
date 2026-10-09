@@ -2391,6 +2391,47 @@ impl SystemState {
                 }
             }
             Message::ToggleFullscreen => {} // Handled in eframe::update
+            #[cfg(not(target_arch = "wasm32"))]
+            Message::Screenshot(path) => {
+                // egui captures the frame painted after this one, which shows
+                // everything this frame's messages changed; the pixels come
+                // back as ScreenshotTaken. Until then the window is busy, which
+                // holds further batch commands and keeps frames coming.
+                if self.progress_tracker.is_some() {
+                    warn!("Not taking a screenshot while the window is busy");
+                    return None;
+                }
+                let ctx = self.context.as_ref()?;
+                ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(egui::UserData::new(
+                    path.clone(),
+                )));
+                self.progress_tracker = Some(crate::wave_source::LoadProgress::new(
+                    crate::wave_source::LoadProgressStatus::Screenshot(path),
+                ));
+            }
+            #[cfg(not(target_arch = "wasm32"))]
+            Message::ScreenshotTaken(path, image) => {
+                let [width, height] = image.size;
+                let rgba = image::RgbaImage::from_raw(
+                    width as u32,
+                    height as u32,
+                    image.as_raw().to_vec(),
+                );
+                match rgba.map(|rgba| rgba.save(&path)) {
+                    Some(Ok(())) => info!("Saved screenshot to {path}"),
+                    Some(Err(e)) => error!("Failed to save screenshot to {path}: {e}"),
+                    None => error!("Screenshot of {width}x{height} pixels has the wrong size"),
+                }
+                if matches!(
+                    &self.progress_tracker,
+                    Some(crate::wave_source::LoadProgress {
+                        progress: crate::wave_source::LoadProgressStatus::Screenshot(pending),
+                        ..
+                    }) if *pending == path
+                ) {
+                    self.progress_tracker = None;
+                }
+            }
             Message::AddViewport => {
                 let waves = self.user.waves.as_mut()?;
                 let viewport = Viewport::new();

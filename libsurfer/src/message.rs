@@ -323,6 +323,13 @@ pub enum Message {
     #[cfg(feature = "python")]
     ReloadPythonPlugin,
     SaveStateFile(Option<Utf8PathBuf>),
+    /// Save the window, as drawn once everything before this has taken effect, as a PNG.
+    #[cfg(not(target_arch = "wasm32"))]
+    Screenshot(Utf8PathBuf),
+    /// The pixels egui delivered for a requested screenshot, to be written to the path.
+    #[cfg(not(target_arch = "wasm32"))]
+    #[serde(skip)]
+    ScreenshotTaken(Utf8PathBuf, #[debug(skip)] Arc<egui::ColorImage>),
     /// Export the currently displayed variables (and only the hierarchy needed for them) to an FST file.
     #[cfg(not(target_arch = "wasm32"))]
     ExportSignalsToFst(Option<Utf8PathBuf>),

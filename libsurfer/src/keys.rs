@@ -170,6 +170,19 @@ impl SystemState {
                 Event::Copy => msgs.push(Message::VariableValueToClipbord(
                     MessageTarget::CurrentSelection,
                 )),
+                #[cfg(not(target_arch = "wasm32"))]
+                Event::Screenshot {
+                    image, user_data, ..
+                } => {
+                    // the request carried the path to write to
+                    if let Some(path) = user_data
+                        .data
+                        .as_ref()
+                        .and_then(|data| data.downcast_ref::<camino::Utf8PathBuf>())
+                    {
+                        msgs.push(Message::ScreenshotTaken(path.clone(), image.clone()));
+                    }
+                }
                 _ => {}
             });
         });

@@ -20,6 +20,7 @@ extism-convert = { workspace = true, optional = true }
 extism-manifest = { workspace = true, optional = true }
 fst-writer.workspace = true
 futures = { workspace = true, features = ["executor"] }
+image.workspace = true
 rustls = { workspace = true, optional = true }
 tokio = { workspace = true, features = ["macros"] }
 
@@ -115,7 +116,6 @@ vergen-gitcl = { workspace = true, features = ["build"] }
 
 [dev-dependencies]
 egui_skia_renderer = { git = "https://gitlab.com/oscargus/egui_skia_renderer.git", rev = "11b95292b5019b0639e7a4deffd4b89b50d27f50" }
-image.workspace = true
 image-compare.workspace = true
 port_check.workspace = true
 project-root.workspace = true

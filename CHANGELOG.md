@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * Translators can hide variables from the variable list (`VariableNameInfo::visible`), for values a human rarely wants to see such as a compiler's intermediate results; the filter menu's "Show hidden" lists them anyway.
 * A variable's true name can carry its source file (`TrueName::SourceCode::file`), shown in the variable's tooltip.
 * Commands `item_unfold_field` and `item_fold_field` expand and collapse a field of the focused variable, so a command file can set up a view that only the mouse could reach.
+* Command `screenshot <file>` saves the window as a PNG once the commands before it have taken effect; with `exit` after it, a command file captures a scripted view unattended.
 
 ## Fixed
 
