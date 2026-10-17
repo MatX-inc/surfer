@@ -344,8 +344,10 @@ impl SystemState {
                                 });
                             self.user.waves.as_mut().unwrap().total_height =
                                 response.inner_rect.height();
-                            if (scroll_offset - response.state.offset.y).abs() > 5. {
-                                msgs.push(Message::SetScrollOffset(response.state.offset.y));
+                            if (scroll_offset - response.state.unclamped_offset().y).abs() > 5. {
+                                msgs.push(Message::SetScrollOffset(
+                                    response.state.unclamped_offset().y,
+                                ));
                             }
                         });
                 }
@@ -400,8 +402,10 @@ impl SystemState {
                             });
                         self.user.waves.as_mut().unwrap().total_height =
                             response.inner_rect.height();
-                        if (scroll_offset - response.state.offset.y).abs() > 5. {
-                            msgs.push(Message::SetScrollOffset(response.state.offset.y));
+                        if (scroll_offset - response.state.unclamped_offset().y).abs() > 5. {
+                            msgs.push(Message::SetScrollOffset(
+                                response.state.unclamped_offset().y,
+                            ));
                         }
                     });
 
@@ -427,8 +431,10 @@ impl SystemState {
                             .auto_shrink([false; 2])
                             .vertical_scroll_offset(scroll_offset)
                             .show(ui, |ui| self.draw_var_values(ui, &mut msgs));
-                        if (scroll_offset - response.state.offset.y).abs() > 5. {
-                            msgs.push(Message::SetScrollOffset(response.state.offset.y));
+                        if (scroll_offset - response.state.unclamped_offset().y).abs() > 5. {
+                            msgs.push(Message::SetScrollOffset(
+                                response.state.unclamped_offset().y,
+                            ));
                         }
                     });
                 let std_stroke = ui.style().visuals.widgets.noninteractive.bg_stroke;

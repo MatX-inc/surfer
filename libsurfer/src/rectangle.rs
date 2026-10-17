@@ -250,7 +250,7 @@ impl Annotatable for RectAnnotation {
         let mut rectangle_annotation = self.clone();
 
         rectangle_annotation.annotation_data.id =
-            egui::Id::new(("rectangle", self.annotation_data.id, viewport_idx));
+            egui::Id::unique(("rectangle", self.annotation_data.id, viewport_idx));
 
         if let (Some(from_y), Some(to_y)) = rectangle_annotation.resolve_y_positions(waves) {
             rectangle_annotation.compute_rect(

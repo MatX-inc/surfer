@@ -32,9 +32,9 @@ pub struct AnnotationData {
 }
 
 impl AnnotationData {
-    pub(crate) fn new(id_source: impl egui::AsId, name: String, num: i32) -> Self {
-        let id = Id::new(id_source);
-        let c_id = Id::new(("comment_box", num));
+    pub(crate) fn new(id_source: impl egui::AsIdSalt, name: String, num: i32) -> Self {
+        let id = Id::unique(id_source);
+        let c_id = Id::unique(("comment_box", num));
         AnnotationData {
             id,
             visible: true,
@@ -295,7 +295,7 @@ pub trait Annotatable {
             return;
         }
 
-        egui::Area::new(egui::Id::new(("annotation_quick_menu", id)))
+        egui::Area::new(egui::Id::unique(("annotation_quick_menu", id)))
             .order(egui::Order::Foreground)
             .fixed_pos(position)
             .show(ui.ctx(), |ui| {
@@ -409,7 +409,7 @@ pub trait Annotatable {
         comment_position: Pos2,
     ) -> (Id, Comment) {
         let mut comment = self.get_comment_box();
-        comment.id = Id::new((comment.id, viewport_idx));
+        comment.id = Id::unique((comment.id, viewport_idx));
 
         comment.name = self.get_name();
 
@@ -570,7 +570,7 @@ impl SystemState {
     }
 
     pub(crate) fn annotation_id(&mut self) -> Id {
-        let id = egui::Id::new(("annotation", self.annotation_id_source));
+        let id = egui::Id::unique(("annotation", self.annotation_id_source));
         self.annotation_id_source += 1;
         id
     }

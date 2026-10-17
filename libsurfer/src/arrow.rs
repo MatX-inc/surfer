@@ -216,7 +216,7 @@ impl Annotatable for ArrowAnnotation {
         let frame_width = ctx.cfg.canvas_size.x;
 
         arrow_annotation.annotation_data.id =
-            egui::Id::new(("arrow", self.annotation_data.id, viewport_idx));
+            egui::Id::unique(("arrow", self.annotation_data.id, viewport_idx));
 
         // `item_center_y` returns a canvas-local y-coordinate, so it must be converted
         // through `ctx.to_screen` before use as a final screen position.
@@ -290,7 +290,7 @@ impl Annotatable for ArrowAnnotation {
 
             let hover_response = ui.interact(
                 hover_rect,
-                egui::Id::new(("arrow_hover_info", self.annotation_data.id, viewport_idx)),
+                egui::Id::unique(("arrow_hover_info", self.annotation_data.id, viewport_idx)),
                 egui::Sense::hover(),
             );
 

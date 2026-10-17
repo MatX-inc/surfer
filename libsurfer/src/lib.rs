@@ -2658,7 +2658,7 @@ impl SystemState {
                 {
                     let comment = target.get_comment_box_mut();
                     comment.message_chain.push(CommentMessage {
-                        id: egui::Id::new(("comment", comment.message_id_source)),
+                        id: egui::Id::unique(("comment", comment.message_id_source)),
                         user,
                         text: message,
                     });

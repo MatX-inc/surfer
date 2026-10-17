@@ -265,7 +265,7 @@ impl SystemState {
     ) {
         egui::collapsing_header::CollapsingState::load_with_default_open(
             ui.ctx(),
-            egui::Id::new(parameters),
+            egui::Id::unique(parameters),
             self.expand_parameter_section,
         )
         .show_header(ui, |ui| {
@@ -606,7 +606,7 @@ impl SystemState {
             let mut collapsing_header =
                 egui::collapsing_header::CollapsingState::load_with_default_open(
                     ui.ctx(),
-                    egui::Id::new(scope),
+                    egui::Id::unique(scope),
                     false,
                 );
             if let Some((header_state, _)) = should_open_header {

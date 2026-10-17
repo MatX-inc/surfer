@@ -308,7 +308,7 @@ pub fn draw_transaction_variable_list(
 pub fn draw_transaction_root(msgs: &mut Vec<Message>, streams: &WaveData, ui: &mut Ui) {
     egui::collapsing_header::CollapsingState::load_with_default_open(
         ui.ctx(),
-        egui::Id::from("Streams"),
+        egui::Id::unique("Streams"),
         false,
     )
     .show_header(ui, |ui| {
